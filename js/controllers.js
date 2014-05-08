@@ -8,7 +8,7 @@ angular.module('myApp.controllers', [])
    $scope.chapter = '';
    $scope.title = '';
    $scope.verses = [];
-   $scope.search = 'John 3:16';
+   $scope.search = '';
    $scope.loading = true;
 
    $scope.typed = function() {
@@ -37,7 +37,13 @@ angular.module('myApp.controllers', [])
       }
    }
 
-   $scope.typed();
-
-
+   // $scope.typed();
+   $.get('http://labs.bible.org/api/?passage=votd&type=json', function(data){
+      if (data.length > 0) {
+         $scope.$apply(function() {
+            $scope.search = data[0].bookname + ' ' + data[0].chapter + ':' + data[0].verse;
+            $scope.typed();
+         });
+      }
+   }, 'jsonp');
 }]);
