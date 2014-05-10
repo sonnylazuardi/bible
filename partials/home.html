@@ -9,7 +9,7 @@
 
 <div class="bible">
 	<h1>{{book}} {{chapter}}</h1>
-	<h3>{{title}}</h3>
+	<h3 ng-bind-html="title"></h3>
 
 	<span ng-repeat="verse in verses">
 		<strong class="number">{{verse.verse}}</strong><span ng-bind-html="verse.text"></span>
