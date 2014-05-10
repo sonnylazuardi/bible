@@ -3,13 +3,15 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('HomeCtrl', ['$scope', 'syncData', function($scope, syncData) {
+.controller('HomeCtrl', ['$scope', 'syncData', 'englishBook', function($scope, syncData, englishBook) {
    $scope.book = '';
    $scope.chapter = '';
    $scope.title = '';
    $scope.verses = [];
    $scope.search = '';
    $scope.loading = true;
+
+   angular.element('#search-box').typeahead({source: englishBook});
 
    $scope.typed = function() {
       $scope.loading = true;
@@ -22,8 +24,12 @@ angular.module('myApp.controllers', [])
                $scope.$apply(function() {
                   $scope.book = data[0].bookname;
                   $scope.chapter = data[0].chapter;
-
                   $scope.verses = [];
+                  if (data[0].title) {
+                     $scope.title = data[0].title;
+                  } else {
+                     $scope.title = '';
+                  }
                   data.forEach(function(item) {
                      var newItem = {
                         verse: item.verse,

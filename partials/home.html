@@ -1,7 +1,7 @@
 <h1>Bible App</h1>
 <p>Simple way to read bible daily</p>
 
-<input type="text" ng-model="search" class="form-control" ng-change="typed()">
+<input type="text" ng-model="search" class="form-control" ng-change="typed()" id="search-box">
 
 <hr>
 
@@ -9,7 +9,7 @@
 
 <div class="bible">
 	<h1>{{book}} {{chapter}}</h1>
-	<h2>{{title}}</h2>
+	<h3>{{title}}</h3>
 
 	<span ng-repeat="verse in verses">
 		<strong class="number">{{verse.verse}}</strong><span ng-bind-html="verse.text"></span>
