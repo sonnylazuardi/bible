@@ -3,13 +3,58 @@
 /* Controllers */
 
 angular.module('myApp.controllers', [])
-.controller('HomeCtrl', ['$scope', 'syncData', 'englishBook', function($scope, syncData, englishBook) {
+.controller('HomeCtrl', ['$scope', 'syncData', 'englishBook', 'indonesiaBook', function($scope, syncData, englishBook, indonesiaBook) {
    $scope.book = '';
    $scope.chapter = '';
    $scope.title = '';
    $scope.verses = [];
    $scope.search = '';
    $scope.loading = true;
+   $scope.language = 'en';
+   $scope.options = [{ name: 'English', value: 'en' }, { name: "Bahasa Indonesia", value: 'id' }];
+   $scope.getBook = function(passage) {
+      var parsed = passage.split(" ");
+      if (parsed.length > 2) {
+         for (var i = 1; i < parsed.length-1; i++) {
+            parsed[0] += ' ' + parsed[i];
+         }
+      }
+      return parsed[0];
+   }
+   $scope.getAddress = function(passage) {
+      var parsed = passage.split(" ");
+      return parsed[parsed.length-1];
+   }
+   $scope.changeLang = function() {
+      console.log('change language');
+      $('#search-box').typeahead('destroy');
+      var book = $scope.getBook($scope.search);
+      var address = $scope.getAddress($scope.search);
+      switch ($scope.language) {
+         case 'en':
+            var curId = indonesiaBook.indexOf(book);
+            $scope.search = englishBook[curId] + ' ' + address;
+            $scope.typed();
+            $('#search-box').typeahead({source: englishBook});
+            break;
+         case 'id':
+            var curId = englishBook.indexOf(book);   
+            $scope.search = indonesiaBook[curId] + ' ' + address;
+            $scope.typed();
+            $('#search-box').typeahead({source: indonesiaBook});
+            break;
+      }
+   }
+   $scope.urlForLang = function() {
+      switch ($scope.language) {
+         case 'en':
+            return 'http://labs.bible.org/api/?passage='+$scope.search+'&type=json';
+            break;
+         case 'id':
+            return 'http://sonnylab.com/api/alkitab/'+$scope.search;
+            break;
+      }
+   }
 
    angular.element('#search-box').typeahead({source: englishBook});
 
@@ -17,7 +62,7 @@ angular.module('myApp.controllers', [])
       $scope.loading = true;
       if (/(\d*)\s*([a-z]+)\s*(\d+)(?::(\d+))?(\s*-\s*(\d+)(?:\s*([a-z]+)\s*(\d+))?(?::(\d+))?)?/i.test($scope.search)) {
          // console.log($scope.search);
-         $.get('http://labs.bible.org/api/?passage='+$scope.search+'&type=json', function(data) {
+         $.get($scope.urlForLang(), function(data) {
             //check if there is data
             if (data.length > 0) {
                $scope.loading = false;
